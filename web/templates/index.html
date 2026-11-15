@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Certificate Doctor — Forensic screening for marksheets</title>
+  <meta name="description" content="Upload a certificate or marksheet. Certificate Doctor runs ELA, text/font, metadata, copy-move, and logic checks — score, verdict, heatmap. Free, offline-capable, MIT." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="glow" aria-hidden="true"></div>
+
+  <header class="top">
+    <a class="brand" href="/">
+      <span class="mark" aria-hidden="true">⊕</span>
+      <span class="brand-name">Certificate Doctor</span>
+    </a>
+    <a class="link-quiet" href="https://github.com/VeliationAI/certificate-doctor" target="_blank" rel="noreferrer">GitHub</a>
+  </header>
+
+  <main>
+    <section class="stage">
+      <p class="eyebrow">Forensic screening · offline core</p>
+      <h1>Certificate Doctor</h1>
+      <p class="lede">
+        Drop a marksheet or certificate. Get a 0–100 authenticity score, verdict, and highlighted tamper heatmaps.
+      </p>
+
+      <div class="workspace">
+        <div class="panel input-panel">
+          <div
+            id="dropzone"
+            class="dropzone"
+            tabindex="0"
+            role="button"
+            aria-label="Upload a certificate image or PDF"
+          >
+            <input id="file" type="file" accept=".png,.jpg,.jpeg,.webp,.tif,.tiff,.bmp,.pdf,image/*,application/pdf" hidden />
+            <div class="drop-icon" aria-hidden="true">↑</div>
+            <p class="drop-title">Drop certificate here</p>
+            <p class="drop-hint">PNG · JPEG · PDF · or click to browse</p>
+            <p class="file-name hidden" id="file-name"></p>
+          </div>
+
+          <div class="or-row"><span>or try a synthetic sample</span></div>
+
+          <div class="sample-grid">
+            <button type="button" class="sample-card" data-sample="genuine" id="btn-genuine">
+              <span class="sample-tag good">Genuine</span>
+              <strong>Clean marksheet</strong>
+              <span>Consistent compression · totals add up</span>
+            </button>
+            <button type="button" class="sample-card" data-sample="tampered" id="btn-tampered">
+              <span class="sample-tag bad">Tampered</span>
+              <strong>Digit + seal forge</strong>
+              <span>ELA hotspot · wrong total · Photoshop tag</span>
+            </button>
+          </div>
+
+          <p class="status" id="status" aria-live="polite"></p>
+          <p class="error hidden" id="error"></p>
+
+          <aside class="scope">
+            <h3>Honest scope</h3>
+            <ul>
+              <li>Cannot verify against university databases</li>
+              <li>Not court-proof — screening with evidence</li>
+              <li>Heavy compression can false-positive</li>
+              <li>Professional forgeries may slip through</li>
+            </ul>
+          </aside>
+        </div>
+
+        <div class="panel result-panel" id="result-panel">
+          <div class="score-head">
+            <div>
+              <p class="eyebrow" id="result-verdict">Ready when you are</p>
+              <h2 id="result-title">Your verdict</h2>
+              <p class="meta" id="result-meta">Pick a sample or upload a file</p>
+            </div>
+            <div class="score-ring" id="score-ring" data-verdict="">
+              <span id="result-score">—</span>
+              <small>/100</small>
+            </div>
+          </div>
+
+          <div class="bars" id="result-bars">
+            <div class="empty-bars">ELA · text/font · metadata · copy-move · logic scores appear here.</div>
+          </div>
+
+          <div class="compare" id="compare">
+            <div class="compare-card">
+              <span class="sample-tag good">Genuine</span>
+              <strong id="genuine-score">—</strong>
+              <span>Demo clean</span>
+            </div>
+            <div class="compare-arrow" aria-hidden="true">→</div>
+            <div class="compare-card">
+              <span class="sample-tag bad">Tampered</span>
+              <strong id="tampered-score">—</strong>
+              <span>Demo forged</span>
+            </div>
+          </div>
+
+          <div class="heat-block hidden" id="heat-block">
+            <h3>Tamper overlay</h3>
+            <p class="meta">ELA heatmap blended with flagged regions</p>
+            <div class="heat-frame">
+              <img id="overlay-img" alt="Certificate with forensic overlay" />
+            </div>
+          </div>
+
+          <div class="actions hidden" id="export-row">
+            <button class="btn btn-ghost" type="button" id="dl-md">Markdown report</button>
+            <button class="btn btn-ghost" type="button" id="dl-json">JSON export</button>
+          </div>
+
+          <div class="issues-head">
+            <h3>Findings</h3>
+            <span class="meta" id="issue-count"></span>
+          </div>
+          <div class="issues" id="issues">
+            <p class="placeholder">Ranked forensic findings and evidence will list here.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="rubric">
+      <h2>How the score works</h2>
+      <p class="lede-sm">Five weighted forensic checks. One verdict. Evidence, not magic.</p>
+      <div class="rubric-row">
+        <article><b>30</b><span>Error Level Analysis</span></article>
+        <article><b>25</b><span>Text / font</span></article>
+        <article><b>15</b><span>Metadata</span></article>
+        <article><b>15</b><span>Copy-move</span></article>
+        <article><b>15</b><span>Logic checks</span></article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>Certificate Doctor · by <a href="https://github.com/VeliationAI" target="_blank" rel="noreferrer">Veliation AI</a> · MIT · offline-capable</span>
+    <code>certificate-doctor scan path</code>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

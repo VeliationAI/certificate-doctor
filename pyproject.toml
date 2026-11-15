@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "certificate-doctor"
+version = "0.1.0"
+description = "Certificate Doctor — forensic screening for certificate/marksheet forgery. ELA, OCR heuristics, metadata, copy-move, logic checks."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "Veliation AI" }]
+keywords = ["forensics", "certificate", "ela", "ocr", "fastapi", "cli"]
+dependencies = [
+  "opencv-python-headless>=4.8.0",
+  "Pillow>=10.0.0",
+  "numpy>=1.24.0",
+  "typer>=0.12.0",
+  "rich>=13.0.0",
+  "fastapi>=0.110.0",
+  "uvicorn[standard]>=0.27.0",
+  "python-multipart>=0.0.9",
+  "jinja2>=3.1.0",
+  "pypdfium2>=4.0.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0.0"]
+ocr = ["pytesseract>=0.3.10"]
+
+[project.scripts]
+certificate-doctor = "certificate_doctor.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+certificate_doctor = ["py.typed"]
